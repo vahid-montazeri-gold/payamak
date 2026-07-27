@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>طلای برادران منتظری - پیامک معاملات</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#d4af37">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="پیامک طلا">
+<meta name="mobile-web-app-capable" content="yes">
+<style>
+body{background:#111;color:#d4af37;font-family:tahoma,sans-serif;margin:0;padding:20px}
+.box{max-width:700px;margin:auto;background:#1b1b1b;border:1px solid #d4af37;border-radius:12px;padding:20px}
+h2{text-align:center}
+label{display:block;margin-top:10px}
+input,select,textarea,button{width:100%;padding:10px;margin-top:5px;border-radius:8px;border:none;box-sizing:border-box}
+input,select,textarea{background:#2b2b2b;color:#fff}
+button{background:#d4af37;color:#111;font-weight:bold;cursor:pointer}
+textarea{height:220px}
+.result{margin-top:10px;padding:10px;background:#222;border-radius:8px}
+</style>
+</head>
+<body>
+<div class="box">
+<h2>سیستم پیامک معاملات طلا</h2>
+
+<label>نام مشتری</label>
+<input id="name">
+
+<label>عنوان</label>
+<select id="gender">
+<option value="آقای">آقای</option>
+<option value="خانم">خانم</option>
+</select>
+
+<label>شماره موبایل</label>
+<input id="phone">
+
+<label>تاریخ (شمسی)</label>
+<input id="date" placeholder="مثال: 1405/03/25">
+
+<label>نوع معامله</label>
+<select id="type">
+<option>خرید</option>
+<option>فروش</option>
+</select>
+
+<label>مبلغ کل (تومان)</label>
+<input id="amount">
+
+<label>مظنه آبشده</label>
+<input id="mozaneh">
+
+<div class="result">
+نرخ هر گرم 18 عیار: <span id="gram18">0</span><br><br>
+وزن 18 عیار: <span id="weight">0</span> گرم
+</div>
+
+<button onclick="previewSMS()">پیش نمایش پیامک</button>
+
+<textarea id="sms"></textarea>
+
+<div style="margin:10px 0;padding:10px;background:#222;border-radius:8px">تعداد کاراکتر: <span id="charCount">0</span></div>
+<div style="margin:10px 0;padding:10px;background:#222;border-radius:8px">تعداد پیامک: <span id="smsCount">1</span></div>
+<button onclick="copySMS()">کپی متن پیامک</button>
+<button onclick="clearForm()">پاک کردن فرم</button>
+<button onclick="sendSMS()">ارسال پیامک</button>
+</div>
+
+
+
+<script>
+function num(v){return Number(String(v).replace(/,/g,''))||0;}
+function fmt(v){return Number(v).toLocaleString('en-US');}
+
+function formatInput(el){
+ let raw=el.value.replace(/,/g,'');
+ if(raw && !isNaN(raw)){el.value=Number(raw).toLocaleString('en-US');}
+ calculate();
+}
+
+document.getElementById('amount').addEventListener('input',function(){formatInput(this);});
+document.getElementById('mozaneh').addEventListener('input',function(){formatInput(this);});
+
+function calculate(){
+ let amount=num(document.getElementById('amount').value);
+ let moz=num(document.getElementById('mozaneh').value);
+ let gram18=Math.floor((moz/4.3318)/1000)*1000;
+ let w=gram18?amount/gram18:0;
+ document.getElementById('gram18').innerText=fmt(gram18);
+ document.getElementById('weight').innerText=w.toFixed(3);
+}
+
+function previewSMS(){
+ calculate();
+
+ let customerName=document.getElementById('name').value;
+ let gender=document.getElementById('gender').value;
+ let transactionType=document.getElementById('type').value;
+ let transactionDate=document.getElementById('date').value;
+
+ if(customerName.trim()===''){
+   alert('نام مشتری را وارد کنید');
+   return;
+ }
+
+ let txt=`${gender}: ${customerName}
+${transactionType} شما در تاریخ: ${transactionDate}
+به وزن ${document.getElementById('weight').innerText} گرم
+به مظنه آبشده: ${document.getElementById('mozaneh').value} تومان
+(هر گرم طلای 18 عیار: ${document.getElementById('gram18').innerText} تومان)
+مبلغ کل ${document.getElementById('amount').value} تومان ثبت گردید
+طلای برادران منتظری`;
+
+ document.getElementById('sms').value=txt;
+ document.getElementById('charCount').innerText=txt.length;
+ document.getElementById('smsCount').innerText=Math.ceil(txt.length/70);
+}
+
+function copySMS(){
+ previewSMS();
+ navigator.clipboard.writeText(document.getElementById('sms').value);
+ alert('متن پیامک کپی شد');
+}
+
+function clearForm(){
+ ['name','phone','date','amount','mozaneh','sms'].forEach(id=>document.getElementById(id).value='');
+ document.getElementById('gram18').innerText='0';
+ document.getElementById('weight').innerText='0.000';
+ document.getElementById('charCount').innerText='0';
+ document.getElementById('smsCount').innerText='1';
+}
+
+function sendSMS(){
+ previewSMS();
+ let phone=document.getElementById('phone').value;
+ let txt=document.getElementById('sms').value;
+ location.href='sms:'+phone+'?body='+encodeURIComponent(txt);
+}
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js');
+    });
+}
+</script>
+
+</body>
+</html>
