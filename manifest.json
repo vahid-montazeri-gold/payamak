@@ -1,7 +1,9 @@
 {
   "name": "سیستم پیامک معاملات طلا",
   "short_name": "پیامک طلا",
-  "start_url": "./index.html",
+  "id": "/",
+  "start_url": "/payamak/",
+  "scope": "/payamak/",
   "display": "standalone",
   "background_color": "#111111",
   "theme_color": "#d4af37",
