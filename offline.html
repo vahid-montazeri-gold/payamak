@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>عدم اتصال به اینترنت</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+
+background:#111;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+height:100vh;
+
+font-family:tahoma;
+
+}
+
+.card{
+
+width:90%;
+
+max-width:420px;
+
+background:#1c1c1c;
+
+border:2px solid #d4af37;
+
+border-radius:18px;
+
+padding:35px;
+
+text-align:center;
+
+box-shadow:0 0 25px rgba(212,175,55,.25);
+
+animation:fade .8s;
+
+}
+
+@keyframes fade{
+
+from{
+
+opacity:0;
+
+transform:translateY(25px);
+
+}
+
+to{
+
+opacity:1;
+
+transform:translateY(0);
+
+}
+
+}
+
+.icon{
+
+font-size:70px;
+
+margin-bottom:20px;
+
+}
+
+h1{
+
+color:#d4af37;
+
+margin-bottom:15px;
+
+}
+
+p{
+
+color:#ddd;
+
+font-size:18px;
+
+line-height:34px;
+
+}
+
+button{
+
+margin-top:30px;
+
+padding:14px 28px;
+
+font-size:17px;
+
+border:none;
+
+border-radius:10px;
+
+background:#d4af37;
+
+cursor:pointer;
+
+font-weight:bold;
+
+}
+
+button:hover{
+
+opacity:.9;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+<div class="icon">📡</div>
+
+<h1>اینترنت قطع است</h1>
+
+<p>
+
+اتصال اینترنت را بررسی کنید.
+
+بعد از برقراری ارتباط دوباره تلاش کنید.
+
+</p>
+
+<button onclick="location.reload()">
+
+تلاش مجدد
+
+</button>
+
+</div>
+
+<script>
+
+window.addEventListener("online",()=>{
+
+location.href="index.html";
+
+});
+
+</script>
+
+</body>
+
+</html>

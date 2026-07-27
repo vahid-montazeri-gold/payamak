@@ -1,21 +1,83 @@
-const CACHE_NAME = "payamak-v1";
+const CACHE_NAME = "payamak-v2";
 
-const FILES_TO_CACHE = [
+const CACHE_FILES = [
   "./",
   "./index.html",
-  "./manifest.json"
+  "./manifest.json",
+  "./offline.html",
+  "./icon-192.png",
+  "./icon-512.png",
+  "./apple-touch-icon.png"
 ];
 
 self.addEventListener("install", event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(FILES_TO_CACHE))
-  );
+
+    self.skipWaiting();
+
+    event.waitUntil(
+
+        caches.open(CACHE_NAME)
+
+        .then(cache => cache.addAll(CACHE_FILES))
+
+    );
+
+});
+
+self.addEventListener("activate", event => {
+
+    event.waitUntil(
+
+        caches.keys().then(keys => {
+
+            return Promise.all(
+
+                keys.map(key => {
+
+                    if (key !== CACHE_NAME) {
+
+                        return caches.delete(key);
+
+                    }
+
+                })
+
+            );
+
+        })
+
+    );
+
+    self.clients.claim();
+
 });
 
 self.addEventListener("fetch", event => {
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => response || fetch(event.request))
-  );
+
+    if (event.request.method !== "GET") return;
+
+    event.respondWith(
+
+        fetch(event.request)
+
+        .then(response => {
+
+            return response;
+
+        })
+
+        .catch(() => {
+
+            return caches.match(event.request)
+
+            .then(response => {
+
+                return response || caches.match("./offline.html");
+
+            });
+
+        })
+
+    );
+
 });
